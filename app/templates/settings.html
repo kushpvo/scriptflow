@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Settings – ScriptFlow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Settings</h1>
+</div>
+
+<form action="/api/settings" method="post" class="card" style="max-width: 600px;" onsubmit="wizardSubmitting(this)">
+
+  <div class="form-group">
+    <label for="default_python">Default Python Version</label>
+    <select id="default_python" name="default_python_version">
+      <option value="3.10" {% if settings and settings.default_python_version=='3.10' %}selected{% endif %}>3.10</option>
+      <option value="3.11" {% if settings and settings.default_python_version=='3.11' %}selected{% endif %}>3.11</option>
+      <option value="3.12" {% if settings and settings.default_python_version=='3.12' %}selected{% endif %}>3.12</option>
+      <option value="3.13" {% if settings and settings.default_python_version=='3.13' %}selected{% endif %}>3.13</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="notif_url">Default Notification URL</label>
+    <input type="text" id="notif_url" name="default_notification_url"
+           value="{{ settings.default_notification_url if settings else '' }}"
+           placeholder="tgram://bottoken/chatid" />
+  </div>
+
+  <div class="form-group">
+    <label for="log_days">Log Retention (days)</label>
+    <input type="number" id="log_days" name="log_retention_days"
+           value="{{ settings.log_retention_days if settings else 30 }}" min="1" max="365" />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Save Settings</button>
+</form>
+{% endblock %}

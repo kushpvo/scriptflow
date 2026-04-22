@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Logs – {{ job.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="flex gap-1 items-center">
+    <a href="/" class="btn btn-sm">← Dashboard</a>
+    <h1>{{ job.name }} — Logs</h1>
+  </div>
+</div>
+
+<div class="log-controls">
+  <label>Date:</label>
+  <select id="log_date" onchange="loadLogDate()">
+    <!-- populated by JS -->
+  </select>
+
+  <label>Stream:</label>
+  <select id="log_stream">
+    <option value="both">stdout + stderr</option>
+    <option value="stdout">stdout only</option>
+    <option value="stderr">stderr only</option>
+  </select>
+
+  <button class="btn btn-sm" id="tail_btn" onclick="toggleTail()">▶ Live Tail</button>
+</div>
+
+<div id="log_container" class="log-container"></div>
+
+<script>
+  const jobId = {{ job.id | tojson }};
+  let tailing = false;
+
+  async function loadLogDate() {
+    stopLogTail();
+    tailing = false;
+    document.getElementById('tail_btn').textContent = '▶ Live Tail';
+    const date = document.getElementById('log_date').value;
+    const stream = document.getElementById('log_stream').value;
+    const container = document.getElementById('log_container');
+    container.innerHTML = '';
+    const res = await fetch(`/api/jobs/${jobId}/logs?date=${date}&stream=${stream}`);
+    const data = await res.json();
+    const lines = data.lines || [];
+    if (lines.length === 0) {
+      container.textContent = '(no logs)';
+    } else {
+      lines.forEach(line => {
+        const div = document.createElement('div');
+        div.className = 'log-line';
+        div.textContent = line;
+        container.appendChild(div);
+      });
+    }
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function toggleTail() {
+    if (tailing) {
+      stopLogTail();
+      tailing = false;
+      document.getElementById('tail_btn').textContent = '▶ Live Tail';
+    } else {
+      startLogTail(jobId);
+      tailing = true;
+      document.getElementById('tail_btn').textContent = '⬛ Stop Tail';
+    }
+  }
+
+  // Load available dates on init
+  (async () => {
+    const res = await fetch(`/api/jobs/${jobId}/logs/dates`);
+    const data = await res.json();
+    const dates = data.dates || [];
+    const select = document.getElementById('log_date');
+    dates.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d;
+      select.appendChild(opt);
+    });
+    if (dates.length > 0) loadLogDate();
+    else document.getElementById('log_container').textContent = '(no logs yet)';
+  })();
+
+  document.getElementById('log_stream').addEventListener('change', loadLogDate);
+</script>
+{% endblock %}

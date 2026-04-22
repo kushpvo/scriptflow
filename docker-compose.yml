@@ -1,0 +1,13 @@
+services:
+  scriptflow:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - scriptflow-data:/data
+    environment:
+      - DATA_DIR=/data
+    restart: unless-stopped
+
+volumes:
+  scriptflow-data:

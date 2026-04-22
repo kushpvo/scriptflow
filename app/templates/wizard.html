@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% set page_title = "Edit Job" if edit_mode else "Add Job" %}
+{% set submit_label = "Save Changes" if edit_mode else "Deploy" %}
+
+{% block title %}{{ page_title }} – Python Runner{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ page_title }}</h1>
+</div>
+
+{% if not edit_mode %}
+<div class="wizard-steps">
+  <div class="wizard-step active" data-step="1">
+    <span class="wizard-step-num">1</span> Repository
+  </div>
+  <div class="wizard-step" data-step="2">
+    <span class="wizard-step-num">2</span> Script
+  </div>
+  <div class="wizard-step" data-step="3">
+    <span class="wizard-step-num">3</span> Config
+  </div>
+  <div class="wizard-step" data-step="4">
+    <span class="wizard-step-num">4</span> Review
+  </div>
+</div>
+{% endif %}
+
+<form action="{% if edit_mode %}/api/wizard/update/{{ job.id }}{% else %}/api/wizard/deploy{% endif %}" method="post"
+      class="wizard-body" onsubmit="wizardSubmitting(this)">
+
+  <!-- Step 1: Repository -->
+  <div class="wizard-panel{% if edit_mode %} edit-section{% endif %}" data-step="1">
+    <div class="form-group">
+      <label for="repo_select">Repository</label>
+      <select id="repo_select" name="repo_id" {% if edit_mode %}disabled{% endif %}>
+        <option value="">— Select a repo —</option>
+        {% for repo in repos %}
+        <option value="{{ repo.id }}" {% if job and job.repo_id == repo.id %}selected{% endif %}>{{ repo.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if not edit_mode %}
+    <div class="form-group">
+      <label for="github_url">Or GitHub URL</label>
+      <input type="url" id="github_url" name="github_url" placeholder="https://github.com/user/repo" />
+    </div>
+    <div class="form-group">
+      <label for="github_token">GitHub Token <span class="text-muted">(for private repos)</span></label>
+      <input type="password" id="github_token" name="github_token" placeholder="ghp_..." />
+    </div>
+    <button type="button" class="btn btn-primary" onclick="wizardCloneAndAdvance(this)">Clone & Continue</button>
+    {% endif %}
+  </div>
+
+  <!-- Step 2: Script -->
+  <div class="wizard-panel{% if not edit_mode %} hidden{% endif %}{% if edit_mode %} edit-section{% endif %}" data-step="2">
+    <div class="form-group">
+      <label for="entrypoint">Entrypoint</label>
+      <select id="entrypoint" name="entrypoint">
+        <option value="">— Select a script —</option>
+        {% if job %}
+        <option value="{{ job.entrypoint }}" selected>{{ job.entrypoint }}</option>
+        {% endif %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="python_version">Python Version</label>
+      <select id="python_version" name="python_version">
+        <option value="3.10" {% if job and job.python_version == "3.10" %}selected{% endif %}>3.10</option>
+        <option value="3.11" {% if job and job.python_version == "3.11" %}selected{% endif %}>3.11</option>
+        <option value="3.12" {% if (job and job.python_version == "3.12") or (not job) %}selected{% endif %}>3.12</option>
+        <option value="3.13" {% if job and job.python_version == "3.13" %}selected{% endif %}>3.13</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="extra_args">Extra Arguments <span class="text-muted">(optional)</span></label>
+      <input type="text" id="extra_args" name="extra_args" value="{{ job.extra_args if job else '' }}" placeholder="--verbose --count 5" />
+    </div>
+    {% if not edit_mode %}<button type="button" class="btn" onclick="wizardNext(2)">Next</button>{% endif %}
+  </div>
+
+  <!-- Step 3: Config -->
+  <div class="wizard-panel{% if not edit_mode %} hidden{% endif %}{% if edit_mode %} edit-section{% endif %}" data-step="3">
+    <div class="form-group">
+      <label for="run_mode">Run Mode</label>
+      <select id="run_mode" name="run_mode">
+        <option value="forever" {% if job and job.run_mode == "forever" %}selected{% endif %}>Forever (always running)</option>
+        <option value="cron" {% if job and job.run_mode == "cron" %}selected{% endif %}>Cron (scheduled)</option>
+      </select>
+    </div>
+
+    <div id="forever_options">
+      <div class="form-group">
+        <label class="toggle-wrap">
+          <input type="checkbox" name="restart_on_crash" {% if not job or job.restart_on_crash %}checked{% endif %} />
+          <span class="toggle"></span>
+          Restart on crash
+        </label>
+      </div>
+    </div>
+
+    <div id="cron_options" class="hidden">
+      <div class="form-group">
+        <label for="cron_preset">Quick Preset</label>
+        <select id="cron_preset">
+          <option value="">— Select a preset —</option>
+          <option value="* * * * *">Every minute</option>
+          <option value="*/5 * * * *">Every 5 minutes</option>
+          <option value="*/15 * * * *">Every 15 minutes</option>
+          <option value="0 * * * *">Every hour</option>
+          <option value="0 9 * * *">Every day at 9:00 AM</option>
+          <option value="0 12 * * *">Every day at noon</option>
+          <option value="0 9 * * 1-5">Weekdays at 9:00 AM</option>
+          <option value="0 0 1 * *">First day of each month</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="cron_expression">Cron Expression</label>
+        <input type="text" id="cron_expression" name="cron_expression" value="{{ job.cron_expression if job else '' }}" placeholder="0 9 * * *" />
+        <div class="cron-feedback" id="cron_feedback"></div>
+      </div>
+
+      <div class="form-group" id="cron_next_run_block" style="display:none;">
+        <label>Next Run</label>
+        <div class="next-run-preview" id="cron_next_run"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="toggle-wrap">
+        <input type="checkbox" name="auto_pull" {% if not job or job.auto_pull %}checked{% endif %} />
+        <span class="toggle"></span>
+        Auto-pull latest code
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label>Environment Variables <span class="text-muted">(optional)</span></label>
+      <table class="env-table" id="env_table">
+        {% if job and job.env_vars %}
+        {% for ev in job.env_vars %}
+        <tr>
+          <td><input type="text" name="env_key" value="{{ ev.key }}" placeholder="KEY" /></td>
+          <td><input type="text" name="env_value" value="{{ ev.value }}" placeholder="value" /></td>
+          <td class="env-del-col"><button type="button" class="env-del-btn" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+      </table>
+      <button type="button" class="btn btn-sm" onclick="addEnvRow()">+ Add Variable</button>
+    </div>
+
+    <div class="form-group">
+      <label for="notification_url">Notification URL <span class="text-muted">(optional)</span></label>
+      <input type="text" id="notification_url" name="notification_url" value="{{ job.notification_url if job else '' }}" placeholder="tgram://bottoken/chatid" />
+      <span class="help-toggle" onclick="toggleHelp('notif-help')">Apprise help ▾</span>
+      <div id="notif-help" class="help-panel">
+        <table>
+          <tr><th>Service</th><th>URL format</th></tr>
+          <tr><td>Telegram</td><td><code>tgram://bottoken/chatid</code></td></tr>
+          <tr><td>Slack</td><td><code>slack://tokenA/tokenB/tokenC/channel</code></td></tr>
+          <tr><td>Discord</td><td><code>discord://webhookid/webhooktoken</code></td></tr>
+          <tr><td>Pushover</td><td><code>pover://userkey/apptoken</code></td></tr>
+          <tr><td>Pushbullet</td><td><code>pbul://accesstoken</code></td></tr>
+        </table>
+        <a href="https://github.com/caronc/apprise/wiki" target="_blank">Full Apprise docs →</a>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="toggle-wrap">
+        <input type="checkbox" name="notify_on_stderr" {% if job and job.notify_on_stderr %}checked{% endif %} />
+        <span class="toggle"></span>
+        Notify on stderr output
+      </label>
+    </div>
+
+    {% if not edit_mode %}<button type="button" class="btn" onclick="wizardNext(3)">Next</button>{% endif %}
+  </div>
+
+  <!-- Step 4: Review -->
+  <div class="wizard-panel{% if not edit_mode %} hidden{% endif %}{% if edit_mode %} edit-section{% endif %}" data-step="4">
+    <div class="form-group">
+      <label for="job_name">Job Name</label>
+      <input type="text" id="job_name" name="job_name" required value="{{ job.name if job else '' }}" placeholder="My Worker" />
+    </div>
+    <div id="review_summary" class="card mb-2"></div>
+    <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+  </div>
+
+</form>
+
+<script>
+  // Show/hide run-mode-specific options
+  document.getElementById('run_mode').addEventListener('change', function() {
+    const forever = document.getElementById('forever_options');
+    const cron    = document.getElementById('cron_options');
+    if (this.value === 'cron') {
+      forever.classList.add('hidden');
+      cron.classList.remove('hidden');
+      initCronHelper();
+    } else {
+      forever.classList.remove('hidden');
+      cron.classList.add('hidden');
+    }
+  });
+
+  // Cron preset selection
+  document.getElementById('cron_preset').addEventListener('change', function() {
+    if (this.value) {
+      document.getElementById('cron_expression').value = this.value;
+      validateCronNow();
+    }
+  });
+
+  // Cron expression input - debounced validation
+  let cronValidateTimer = null;
+  document.getElementById('cron_expression').addEventListener('input', function() {
+    clearTimeout(cronValidateTimer);
+    cronValidateTimer = setTimeout(validateCronNow, 300);
+  });
+
+  // Init cron helper on page load in case step 3 is shown (e.g. back navigation)
+  initCronHelper();
+</script>
+{% endblock %}
