@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.1...scriptflow-v0.3.2) (2026-04-23)
+
+
+### Bug Fixes
+
+* trigger Docker version tags via release event instead of tag push ([#7](https://github.com/kushpvo/scriptflow/issues/7)) ([93d70c8](https://github.com/kushpvo/scriptflow/commit/93d70c8ecf5619ba6f7b254fdd1551a29f91332b))
+* use stored token when re-cloning existing repo via wizard ([#9](https://github.com/kushpvo/scriptflow/issues/9)) ([217f510](https://github.com/kushpvo/scriptflow/commit/217f510686588f90894587638586564c05e65def))
+
 ## [0.3.1](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.0...scriptflow-v0.3.1) (2026-04-23)
 
 
