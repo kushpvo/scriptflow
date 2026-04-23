@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.0...scriptflow-v0.3.1) (2026-04-23)
+
+
+### Bug Fixes
+
+* use x-access-token format for GitHub token injection ([#5](https://github.com/kushpvo/scriptflow/issues/5)) ([98b1187](https://github.com/kushpvo/scriptflow/commit/98b11871a603c76351187b5b6b87bd076dfd7c64))
+
 ## [0.3.0](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.2.0...scriptflow-v0.3.0) (2026-04-23)
 
 
