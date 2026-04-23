@@ -72,6 +72,7 @@
         <option value="3.11" {% if job and job.python_version == "3.11" %}selected{% endif %}>3.11</option>
         <option value="3.12" {% if (job and job.python_version == "3.12") or (not job) %}selected{% endif %}>3.12</option>
         <option value="3.13" {% if job and job.python_version == "3.13" %}selected{% endif %}>3.13</option>
+        <option value="3.14" {% if job and job.python_version == "3.14" %}selected{% endif %}>3.14</option>
       </select>
     </div>
     <div class="form-group">

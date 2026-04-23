@@ -8,20 +8,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     ca-certificates \
-    python3 \
-    python3-pip \
-    python3-venv \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -LsSf https://astral.sh/uv/install.sh | sh \
-    && ln -s /usr/bin/python3 /usr/local/bin/python
+    && curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ENV PATH="/root/.local/bin:$PATH"
+
+# Pre-fetch all supported Python versions so no internet access needed at runtime
+RUN uv python install 3.10 3.11 3.12 3.13 3.14
 
 WORKDIR /app
 
 COPY pyproject.toml ./
 COPY uv.lock ./
-RUN uv venv --python python3 && uv sync --frozen --no-dev
+RUN uv venv --python 3.12 && uv sync --frozen --no-dev
 
 COPY app/ ./app/
 
