@@ -10,6 +10,7 @@ def local_bare_repo(tmp_path):
     bare = tmp_path / "bare"
     bare.mkdir()
     subprocess.run(["git", "init", "--bare", str(bare)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(bare), "symbolic-ref", "HEAD", "refs/heads/main"], check=True, capture_output=True)
     # Create a working copy, add files, push to bare
     work = tmp_path / "work"
     subprocess.run(["git", "clone", str(bare), str(work)], check=True, capture_output=True)

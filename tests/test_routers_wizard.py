@@ -80,7 +80,7 @@ def test_edit_wizard_renders_with_job_data(client, setup_mocks, repo, monkeypatc
     html = resp.text
     assert "Edit Job" in html
     assert "Save Changes" in html
-    assert 'hx-put="/api/jobs/' in html
+    assert 'action="/api/wizard/update/' in html
     assert 'value="Test Job"' in html
     assert 'value="main.py"' in html
 
