@@ -34,6 +34,33 @@ def test_clone_returns_options_html(client, setup_mocks):
     assert "repo_id" in resp.text or "Error" in resp.text
 
 
+def test_clone_existing_repo_uses_stored_token(client, monkeypatch):
+    """Re-submitting an existing repo URL without a token should fall back to the stored token."""
+    import app.github as gh
+    captured = {}
+
+    async def fake_clone(repo_id, url, token):
+        captured["token"] = token
+        return "/tmp/fake"
+
+    monkeypatch.setattr(gh, "clone_repo", fake_clone)
+
+    # First submission: create repo with a token
+    client.post("/api/wizard/clone", data={
+        "github_url": "https://github.com/u/private",
+        "github_token": "ghp_storedtoken",
+    })
+    assert captured["token"] == "ghp_storedtoken"
+
+    # Second submission: same URL, no token (e.g. repo dir was deleted)
+    captured.clear()
+    resp = client.post("/api/wizard/clone", data={
+        "github_url": "https://github.com/u/private",
+    })
+    assert resp.status_code == 200
+    assert captured["token"] == "ghp_storedtoken"
+
+
 def test_deploy_creates_job_and_redirects(client, setup_mocks, repo, monkeypatch):
     import app.uv_manager as uvm
     from app.routers import wizard as wiz_mod
