@@ -33,7 +33,7 @@ async def wizard_clone(
         repo.github_token = token
         db.commit()
     try:
-        await github.clone_repo(repo.id, github_url, token)
+        await github.clone_repo(repo.id, github_url, token or repo.github_token)
     except RuntimeError as e:
         return HTMLResponse(f'<option disabled>Error: {e}</option>', status_code=200)
     files = github.scan_py_files(repo.id)
