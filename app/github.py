@@ -12,7 +12,7 @@ def _data_dir() -> str:
 def _inject_token(url: str, token: str | None) -> str:
     if not token:
         return url
-    return re.sub(r"https://", f"https://{quote(token, safe='')}@", url, count=1)
+    return re.sub(r"https://", f"https://x-access-token:{quote(token, safe='')}@", url, count=1)
 
 
 async def clone_repo(repo_id: int, github_url: str, token: str | None) -> str:
