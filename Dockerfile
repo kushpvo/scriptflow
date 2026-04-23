@@ -24,7 +24,6 @@ COPY uv.lock ./
 RUN uv venv --python python3 && uv sync --frozen --no-dev
 
 COPY app/ ./app/
-COPY unraid-template.xml ./
 
 EXPOSE 8000
 
