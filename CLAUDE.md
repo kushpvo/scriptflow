@@ -67,6 +67,26 @@ On app start, the lifespan handler recovers "forever" jobs that were running bef
 
 Enabled via `TELEGRAM_BOT_TOKEN` env var. Uses `python-telegram-bot` v20. Allows remote start/stop/restart of jobs.
 
+## CI/CD
+
+**GitHub Actions** (`.github/workflows/ci.yml`) — three sequential jobs:
+
+| Trigger | `test` | `build-push` (GHCR) | `release` |
+|---|---|---|---|
+| PR opened | runs | skipped | skipped |
+| Push to `main` | runs | runs (`latest` + `sha-*` tags) | skipped |
+| `git tag vX.Y.Z && git push origin vX.Y.Z` | runs | runs (`vX.Y.Z` + `X.Y` tags) | runs (GitHub Release) |
+
+**Image:** `ghcr.io/kushpvo/scriptflow:latest`
+
+**To cut a release:**
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+**Note:** GHCR packages are private by default on first push. Set visibility to Public at `github.com/kushpvo/scriptflow/pkgs/container/scriptflow` → Package settings.
+
 ## Design Docs
 
 Design specifications are in `docs/superpowers/specs/`. These document feature intent before implementation.
