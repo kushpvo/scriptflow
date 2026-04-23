@@ -21,7 +21,7 @@ async def send_notification(url: str, title: str, body: str) -> None:
 
 def should_notify_stderr(job_id: int) -> bool:
     now = time.monotonic()
-    last = _stderr_last_notified.get(job_id, 0)
+    last = _stderr_last_notified.get(job_id, float('-inf'))
     if now - last >= STDERR_RATE_LIMIT_SECS:
         _stderr_last_notified[job_id] = now
         return True
