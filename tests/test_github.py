@@ -30,7 +30,7 @@ def local_bare_repo(tmp_path):
 def test_inject_token_inserts_correctly():
     url = "https://github.com/user/repo"
     result = _inject_token(url, "mytoken")
-    assert result == "https://mytoken@github.com/user/repo"
+    assert result == "https://x-access-token:mytoken@github.com/user/repo"
 
 
 def test_inject_token_no_token():
