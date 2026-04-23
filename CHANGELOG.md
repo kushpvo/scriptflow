@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.2.0...scriptflow-v0.3.0) (2026-04-23)
+
+
+### Features
+
+* use uv for Python version management, add Python 3.14 support ([#3](https://github.com/kushpvo/scriptflow/issues/3)) ([117bcad](https://github.com/kushpvo/scriptflow/commit/117bcad9c935d27c7777499ae65aac4db0139652))
+
 ## [0.2.0](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.1.0...scriptflow-v0.2.0) (2026-04-23)
 
 
