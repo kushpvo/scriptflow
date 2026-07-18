@@ -32,6 +32,14 @@
            value="{{ settings.log_retention_days if settings else 30 }}" min="1" max="365" />
   </div>
 
+  <div class="form-group">
+    <label for="timezone">Default Timezone</label>
+    <input type="text" id="timezone" name="timezone"
+           value="{{ settings.timezone if settings else 'UTC' }}"
+           placeholder="Europe/London" />
+    <span class="text-muted">Set to the timezone your scripts expect (e.g. Europe/London). Applied as TZ env var to all jobs.</span>
+  </div>
+
   <button type="submit" class="btn btn-primary">Save Settings</button>
 </form>
 {% endblock %}

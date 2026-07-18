@@ -24,9 +24,14 @@ def _build_cmd(job: Job) -> list[str]:
     return cmd
 
 
-def _build_env(job: Job) -> dict:
+def _build_env(job: Job, db: Session = None) -> dict:
     base = {"PATH": os.environ.get("PATH", "/usr/bin:/bin")}
     base.update({ev.key: ev.value for ev in job.env_vars})
+    if db:
+        from app.models import AppSettings
+        s = db.get(AppSettings, 1)
+        if s and s.timezone:
+            base.setdefault("TZ", s.timezone)
     return base
 
 
@@ -96,7 +101,7 @@ async def start_job(job_id: int, db: Session = Depends(get_db)):
         raise HTTPException(404, "Job not found")
     if job.run_mode == "cron":
         add_cron_job(job_id, job.cron_expression, _build_cmd(job),
-                     _build_env(job), job.notification_url)
+                     _build_env(job, db), job.notification_url)
         job.status = "idle"
         db.commit()
         return
@@ -107,7 +112,7 @@ async def start_job(job_id: int, db: Session = Depends(get_db)):
         await uv_manager.create_venv(job_id, job.python_version, fresh=True)
         await uv_manager.install_requirements(job_id, job.repo_id)
     await process_manager.start(
-        job_id, _build_cmd(job), _build_env(job),
+        job_id, _build_cmd(job), _build_env(job, db),
         job.restart_on_crash, job.notification_url, job.notify_on_stderr,
     )
     job.status = "running"
@@ -148,7 +153,7 @@ def update_job(job_id: int, payload: JobUpdate, db: Session = Depends(get_db)):
         remove_cron_job(job_id)
     if job.run_mode == "cron":
         add_cron_job(job_id, job.cron_expression, _build_cmd(job),
-                     _build_env(job), job.notification_url)
+                     _build_env(job, db), job.notification_url)
     return job
 
 
@@ -159,7 +164,7 @@ async def restart_job(job_id: int, db: Session = Depends(get_db)):
         raise HTTPException(404, "Job not found")
     if job.run_mode == "forever":
         await process_manager.restart(
-            job_id, _build_cmd(job), _build_env(job),
+            job_id, _build_cmd(job), _build_env(job, db),
             job.restart_on_crash, job.notification_url, job.notify_on_stderr,
         )
         job.status = "running"
@@ -197,7 +202,7 @@ async def sync_job(job_id: int, db: Session = Depends(get_db)):
     write_log_line(job_id, "stdout", "--- Restarting job ---")
     if job.run_mode == "forever":
         await process_manager.restart(
-            job_id, _build_cmd(job), _build_env(job),
+            job_id, _build_cmd(job), _build_env(job, db),
             job.restart_on_crash, job.notification_url, job.notify_on_stderr,
         )
         job.status = "running"

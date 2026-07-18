@@ -136,4 +136,5 @@ class SettingsOut(BaseModel):
     default_python_version: str
     default_notification_url: Optional[str]
     log_retention_days: int
+    timezone: str
     model_config = {"from_attributes": True}
