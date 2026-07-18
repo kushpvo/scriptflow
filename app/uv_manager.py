@@ -47,4 +47,26 @@ async def install_requirements(job_id: int, repo_id: int) -> str | None:
     stdout, stderr = await proc.communicate()
     if proc.returncode != 0:
         raise RuntimeError(stderr.decode().strip())
+
+    if _has_playwright(venv_path):
+        playwright_bin = venv_path / "bin" / "playwright"
+        proc = await asyncio.create_subprocess_exec(
+            str(playwright_bin), "install", "chromium",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        _, install_stderr = await proc.communicate()
+        if proc.returncode != 0:
+            raise RuntimeError(f"playwright install chromium failed: {install_stderr.decode().strip()}")
+
     return stdout.decode()
+
+
+def _has_playwright(venv_path: Path) -> bool:
+    site_packages = venv_path / "lib"
+    if not site_packages.exists():
+        return False
+    for entry in site_packages.iterdir():
+        if "python" in entry.name and (entry / "playwright").exists():
+            return True
+    return False
