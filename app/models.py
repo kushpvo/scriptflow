@@ -50,3 +50,4 @@ class AppSettings(Base):
     default_python_version = Column(String, default="3.12")
     default_notification_url = Column(String, nullable=True)
     log_retention_days = Column(Integer, default=30)
+    timezone = Column(String, default="UTC")

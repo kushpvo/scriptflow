@@ -28,6 +28,7 @@ def get_settings(db: Session = Depends(get_db)):
 def update_settings(
     default_python_version: Annotated[str, Form()],
     log_retention_days: Annotated[int, Form()],
+    timezone: Annotated[str, Form()] = "UTC",
     default_notification_url: Annotated[str, Form()] = "",
     db: Session = Depends(get_db),
 ):
@@ -35,5 +36,6 @@ def update_settings(
     s.default_python_version = default_python_version
     s.log_retention_days = log_retention_days
     s.default_notification_url = default_notification_url or None
+    s.timezone = timezone or "UTC"
     db.commit()
     return RedirectResponse("/settings", status_code=302)
