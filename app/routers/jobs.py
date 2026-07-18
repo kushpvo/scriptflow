@@ -27,11 +27,9 @@ def _build_cmd(job: Job) -> list[str]:
 def _build_env(job: Job, db: Session = None) -> dict:
     base = {"PATH": os.environ.get("PATH", "/usr/bin:/bin")}
     base.update({ev.key: ev.value for ev in job.env_vars})
-    if db:
-        from app.models import AppSettings
-        s = db.get(AppSettings, 1)
-        if s and s.timezone:
-            base.setdefault("TZ", s.timezone)
+    tz = os.environ.get("TZ") or os.environ.get("HOST_TZ")
+    if tz:
+        base["TZ"] = tz
     return base
 
 
