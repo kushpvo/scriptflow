@@ -31,7 +31,7 @@ def _build_env(job: Job, db: Session = None) -> dict:
         from app.models import AppSettings
         s = db.get(AppSettings, 1)
         if s and s.timezone:
-            base.setdefault("TZ", s.timezone)
+            base["TZ"] = s.timezone
     return base
 
 
