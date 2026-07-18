@@ -8,6 +8,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     ca-certificates \
+    libnss3 \
+    libnspr4 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libxkbcommon0 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libasound2t64 \
+    libdrm2 \
     && rm -rf /var/lib/apt/lists/* \
     && curl -LsSf https://astral.sh/uv/install.sh | sh
 
@@ -21,6 +34,9 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY uv.lock ./
 RUN uv venv --python 3.12 && uv sync --frozen --no-dev
+
+RUN uv pip install --python /app/.venv/bin/python playwright \
+    && /app/.venv/bin/playwright install chromium
 
 COPY app/ ./app/
 
