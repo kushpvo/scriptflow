@@ -49,6 +49,10 @@
               hx-on::after-request="this.textContent='Pull & Restart'; this.disabled=false; htmx.trigger('#card-grid', 'refresh')">Pull & Restart</button>
       <a href="/jobs/{{ job.id }}/logs" class="btn btn-sm">Logs</a>
       <a href="/wizard/edit/{{ job.id }}" class="btn btn-sm">Edit</a>
+      <button class="btn btn-sm btn-danger" hx-delete="/api/jobs/{{ job.id }}"
+              hx-swap="none"
+              hx-confirm="Delete {{ job.name }} permanently?"
+              hx-on::after-request="htmx.trigger('#card-grid', 'refresh')">Delete</button>
     </div>
   </div>
   {% endfor %}
