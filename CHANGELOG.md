@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.3...scriptflow-v0.3.4) (2026-07-18)
+
+
+### Bug Fixes
+
+* make timezone configurable via AppSettings UI ([#15](https://github.com/kushpvo/scriptflow/issues/15)) ([1fb735a](https://github.com/kushpvo/scriptflow/commit/1fb735a6f987362aa75e2d566fa83117250b79fe))
+
 ## [0.3.3](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.2...scriptflow-v0.3.3) (2026-07-18)
 
 
