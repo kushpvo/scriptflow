@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.2...scriptflow-v0.3.3) (2026-07-18)
+
+
+### Bug Fixes
+
+* add delete button to dashboard job cards ([#13](https://github.com/kushpvo/scriptflow/issues/13)) ([2bdde66](https://github.com/kushpvo/scriptflow/commit/2bdde66f838e3f0e59b5c6520f7697853d920fd7))
+
 ## [0.3.2](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.1...scriptflow-v0.3.2) (2026-04-23)
 
 
