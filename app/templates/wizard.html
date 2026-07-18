@@ -190,6 +190,12 @@
     </div>
     <div id="review_summary" class="card mb-2"></div>
     <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+    {% if edit_mode %}
+    <hr style="border-color: var(--border); margin: 1.5rem 0;" />
+    <div style="text-align: right;">
+      <button type="button" class="btn btn-danger" onclick="deleteJob({{ job.id }})">Delete Job</button>
+    </div>
+    {% endif %}
   </div>
 
 </form>
@@ -226,5 +232,22 @@
 
   // Init cron helper on page load in case step 3 is shown (e.g. back navigation)
   initCronHelper();
+
+  {% if edit_mode %}
+  async function deleteJob(jobId) {
+    if (!confirm('Delete this job permanently? This cannot be undone.')) return;
+    try {
+      const res = await fetch('/api/jobs/' + jobId, { method: 'DELETE' });
+      if (res.ok) {
+        window.location.href = '/';
+      } else {
+        const text = await res.text();
+        alert('Failed to delete job: ' + text);
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+  {% endif %}
 </script>
 {% endblock %}
