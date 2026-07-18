@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.4...scriptflow-v0.3.5) (2026-07-18)
+
+
+### Bug Fixes
+
+* always set TZ from AppSettings, don't skip if job has own TZ ([#17](https://github.com/kushpvo/scriptflow/issues/17)) ([274dd3d](https://github.com/kushpvo/scriptflow/commit/274dd3df2077b6c5477875bbde6e577119daa8ab))
+
 ## [0.3.4](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.3...scriptflow-v0.3.4) (2026-07-18)
 
 
