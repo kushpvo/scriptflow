@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.7](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.6...scriptflow-v0.3.7) (2026-07-19)
+
+
+### Bug Fixes
+
+* add tzdata package and remove hardcoded TZ from compose ([#21](https://github.com/kushpvo/scriptflow/issues/21)) ([82e31a8](https://github.com/kushpvo/scriptflow/commit/82e31a8052673d655c22b56cb4551506ceebb2d2))
+
 ## [0.3.6](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.5...scriptflow-v0.3.6) (2026-07-18)
 
 
