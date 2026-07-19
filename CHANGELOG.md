@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.8](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.7...scriptflow-v0.3.8) (2026-07-19)
+
+
+### Bug Fixes
+
+* Update docker-compose.yml ([#23](https://github.com/kushpvo/scriptflow/issues/23)) ([c792e15](https://github.com/kushpvo/scriptflow/commit/c792e15c83db588d3e9f74c49025bf90508220af))
+
 ## [0.3.7](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.6...scriptflow-v0.3.7) (2026-07-19)
 
 
