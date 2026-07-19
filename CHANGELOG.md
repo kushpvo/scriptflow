@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.5...scriptflow-v0.3.6) (2026-07-18)
+
+
+### Bug Fixes
+
+* use docker-compose TZ env var instead of AppSettings ([#19](https://github.com/kushpvo/scriptflow/issues/19)) ([b969fdc](https://github.com/kushpvo/scriptflow/commit/b969fdcccb7b021cd14af89d54c1ecb19b275f22))
+
 ## [0.3.5](https://github.com/kushpvo/scriptflow/compare/scriptflow-v0.3.4...scriptflow-v0.3.5) (2026-07-18)
 
 
