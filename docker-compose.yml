@@ -7,7 +7,6 @@ services:
       - scriptflow-data:/data
     environment:
       - DATA_DIR=/data
-      - TZ=Europe/London
     restart: unless-stopped
 
 volumes:
