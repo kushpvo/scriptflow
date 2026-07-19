@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     ca-certificates \
+    tzdata \
     libnss3 \
     libnspr4 \
     libatk-bridge2.0-0 \
